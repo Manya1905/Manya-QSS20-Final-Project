@@ -9,7 +9,9 @@ This project asks whether COVID-era viral food trends (sourdough, banana bread, 
 - **Instagram/Facebook posts** (`data/manya_*.csv`): keyword-filtered posts covering food-related content from December 2019 through December 2020, obtained via professor-provided keyword search.
 - **USDA Weekly Retail Food Sales** (`data/NationalTotalAndSubcategory.csv`, `data/StateAndCategory.csv`): national weekly retail scanner data on grocery purchases by product subcategory.
 
-Raw data files live in `data/`. Intermediate files generated while running the notebooks (combined/cleaned data) are saved to `cleaned_data/`.
+Raw data files are too large to be stored in this repo. Download them from Google Drive and place them in the `data/` folder before running the notebooks: [Raw data (Google Drive)](https://drive.google.com/drive/folders/15I9zewgUfRI35mlo0zqg3tonn7rB4WCo?usp=sharing)
+
+Intermediate files generated while running the notebooks (combined/cleaned data) are saved to `cleaned_data/`.
 
 ## Notebooks
 
