@@ -6,10 +6,6 @@ trends (Method #5), what linguistic/content features predict virality within eac
 (Method #6), and what undiscovered food trends exist in the broader non-trend post population
 (Method #7, LDA topic modeling).
 
-Full narrative results: [`ENGLISH_ONLY_RESULTS.md`](ENGLISH_ONLY_RESULTS.md). Methodology
-reference: [`methods.md`](methods.md). Project structure/status overview:
-[`MASTER_PROJECT_REFERENCE.md`](MASTER_PROJECT_REFERENCE.md).
-
 ## Repo structure
 
 ```
@@ -44,8 +40,8 @@ to `code/` and `output/`) before running any notebook below:
    `output/cleaned_data/trends_combined_english.csv`. Runs Method #5: engagement distribution
    summaries, Kruskal-Wallis and one-way ANOVA (log-transformed) tests for whether engagement
    differs across the 5 trends, and pairwise Mann-Whitney U follow-up tests. Output:
-   `output/engagement/viz_english_engagement_distributions.png` (console/notebook output holds
-   the statistical results, reported in full in `ENGLISH_ONLY_RESULTS.md`).
+   `output/engagement/viz_english_engagement_distributions.png` (the notebook's own console
+   output holds the full statistical results).
 
 ### `code/regression/` (Method #6: what predicts virality)
 
