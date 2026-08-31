@@ -1,5 +1,7 @@
 # COVID-Era Viral Food Trends: English-Only Analysis Pipeline
 
+**[Project website](https://manya-final-project.vercel.app/)**
+
 Analyzes Instagram/Facebook discourse about five COVID-era viral food trends (sourdough, banana
 bread, dalgona coffee, baked oats, feta pasta): whether engagement differs significantly across
 trends (Method #5), what linguistic/content features predict virality within each trend
