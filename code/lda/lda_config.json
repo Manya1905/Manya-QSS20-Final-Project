@@ -1,0 +1,56 @@
+{
+  "tokenization_fragments": [
+    "s",
+    "t",
+    "m",
+    "ve",
+    "g"
+  ],
+  "platform_artifacts": [
+    "mention",
+    "redacted",
+    "link",
+    "bio"
+  ],
+  "recipe_boilerplate": [
+    "recipe",
+    "make",
+    "made",
+    "food",
+    "like",
+    "just",
+    "delicious",
+    "love",
+    "good",
+    "day",
+    "today",
+    "time"
+  ],
+  "units_measurements": [
+    "cup",
+    "tsp",
+    "tbsp",
+    "add",
+    "salt",
+    "oil",
+    "minutes",
+    "ingredients"
+  ],
+  "trend_single_words": [
+    "sourdough",
+    "dalgona"
+  ],
+  "min_df": 5,
+  "max_df": 0.5,
+  "ngram_range": [
+    1,
+    1
+  ],
+  "k_values_to_test": [
+    5,
+    10,
+    15,
+    20,
+    25
+  ]
+}

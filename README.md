@@ -1,43 +1,131 @@
-# COVID-Era Viral Food Trends
+# COVID-Era Viral Food Trends: English-Only Analysis Pipeline
 
-## Project summary
+Analyzes Instagram/Facebook discourse about five COVID-era viral food trends (sourdough, banana
+bread, dalgona coffee, baked oats, feta pasta): whether engagement differs significantly across
+trends (Method #5), what linguistic/content features predict virality within each trend
+(Method #6), and what undiscovered food trends exist in the broader non-trend post population
+(Method #7, LDA topic modeling). A supplementary creator-trend network analysis is also included.
 
-This project asks whether COVID-era viral food trends (sourdough, banana bread, dalgona coffee, baked oats, and feta pasta) produced lasting shifts in real-world consumer behavior, or whether they faded once online discourse moved on. It compares the volume and timing of Instagram/Facebook discourse about each trend against real-world U.S. retail sales data (USDA Weekly Retail Food Sales) to see whether spikes in online conversation coincided with, preceded, or lagged actual changes in consumer purchasing, particularly around the March 2020 U.S. national emergency declaration.
+Full narrative results: [`ENGLISH_ONLY_RESULTS.md`](ENGLISH_ONLY_RESULTS.md). Methodology
+reference: [`methods.md`](methods.md). Project structure/status overview:
+[`MASTER_PROJECT_REFERENCE.md`](MASTER_PROJECT_REFERENCE.md).
+
+## Repo structure
+
+```
+code/               all analysis notebooks, numbered in run order (see below)
+output/              generated CSVs, figures, and model checkpoints
+data/                NOT in this repo -- see Data section below
+```
 
 ## Data
 
-- **Instagram/Facebook posts** (`data/manya_*.csv`): keyword-filtered posts covering food-related content from December 2019 through December 2020, obtained via professor-provided keyword search.
-- **USDA Weekly Retail Food Sales** (`data/NationalTotalAndSubcategory.csv`, `data/StateAndCategory.csv`): national weekly retail scanner data on grocery purchases by product subcategory.
+Raw data is not stored in this repo. It consists of four keyword-filtered Instagram/Facebook
+post CSVs (`manya_first_12012024.csv`, `manya_0711-1104.csv`, `manya_1105_1201.csv`,
+`manya_0410-0710.csv`) plus five trend-specific derived CSVs (`sourdough.csv`,
+`banana_bread.csv`, `dalgona_coffee.csv`, `baked_oats.csv`, `feta_pasta.csv`).
 
-Raw data files are too large to be stored in this repo. Download them from Google Drive and place them in the `data/` folder before running the notebooks: [Raw data (Google Drive)](https://drive.google.com/drive/folders/15I9zewgUfRI35mlo0zqg3tonn7rB4WCo?usp=sharing)
+Download the data from Google Drive and place it in a `data/` folder at the repo root (sibling
+to `code/` and `output/`) before running any notebook below:
 
-Intermediate files generated while running the notebooks (combined/cleaned data) are saved to `cleaned_data/`.
+**[Raw data (Google Drive), PLACEHOLDER: link to be added]**
 
-## Notebooks
+## Notebooks, in run order
 
-The analysis is split into three notebooks in `code/`, meant to be run in order:
+### `code/` (top level)
 
-1. **[`01_data_pull.ipynb`](code/01_data_pull.ipynb)**: Loads the four raw Instagram/Facebook CSVs and the two raw USDA CSVs, does basic exploration (shape, columns, head), and saves the combined Instagram data to `cleaned_data/instagram_combined_raw.csv`.
+1. **[`00_data_cleaning.ipynb`](code/00_data_cleaning.ipynb)**. Input: the 5 trend-specific
+   CSVs in `data/`. Loads all 5, tags each row with its `trend`, recomputes the
+   `is_covid_framed` flag from a corrected keyword list, combines them, filters to English-only
+   (`lang == "en"`), and drops rows with null like/comment counts. Output:
+   `output/cleaned_data/trends_combined_english.csv`.
 
-2. **[`02_data_cleaning.ipynb`](code/02_data_cleaning.ipynb)**: Loads the combined Instagram data, cleans it (drops unmatchable rows, parses dates), and filters it into five trend-specific DataFrames by keyword (feta pasta, sourdough, banana bread, baked oats, dalgona coffee), flagging whether each post is COVID/quarantine-framed. Also loads and cleans the USDA data, filtering it down to the "Flour and mixes" and "Sweet mixes" subcategories used as retail-sales proxies. Saves all seven resulting DataFrames to `cleaned_data/`.
+2. **[`01_engagement_analysis.ipynb`](code/01_engagement_analysis.ipynb)**. Input:
+   `output/cleaned_data/trends_combined_english.csv`. Runs Method #5: engagement distribution
+   summaries, Kruskal-Wallis and one-way ANOVA (log-transformed) tests for whether engagement
+   differs across the 5 trends, and pairwise Mann-Whitney U follow-up tests. Output:
+   `output/engagement/viz_english_engagement_distributions.png` (console/notebook output holds
+   the statistical results, reported in full in `ENGLISH_ONLY_RESULTS.md`).
 
-3. **[`03_analysis.ipynb`](code/03_analysis.ipynb)**: Loads the cleaned trend DataFrames and USDA subsets, and generates all charts: a peak-month comparison across the five trends, monthly post-frequency charts per trend (split by COVID-framing), and the two USDA retail sales charts. Exports all generated charts into a single zip file.
+3. **[`02_creator_trend_network.ipynb`](code/02_creator_trend_network.ipynb)**. Input: the 4 raw
+   Instagram/Facebook CSVs in `data/`. Supplementary analysis: builds a creator-to-trend
+   membership map, computes pairwise Jaccard similarity between trends by shared creators, and
+   breaks down `post_owner.type` (creator/business/personal) composition by trend and by
+   trend-pair overlap. Output: `output/creator_network/creator_trend_network.png`,
+   `output/creator_network/creator_trend_heatmap.png`,
+   `output/cleaned_data/trend_creator_overlap.csv`.
 
-## Running the notebooks
+### `code/regression/` (Method #6: what predicts virality)
 
-Run in order from inside the `code/` folder. Each notebook depends on files saved by the one before it:
+4. **[`00_rule_based_features.ipynb`](code/regression/00_rule_based_features.ipynb)**. Input:
+   `output/cleaned_data/trends_combined_english.csv`. Adds free, rule-based linguistic features:
+   log word count, VADER sentiment score, hashtag count, exclamation/question/emoji counts, and
+   log-transformed outcome variables (`log_likes`, `log_comments`). Output:
+   `output/cleaned_data/trends_combined_english_features.csv`.
 
-```
-cd code
-jupyter notebook
-```
+5. **[`01_zero_shot_classification.ipynb`](code/regression/01_zero_shot_classification.ipynb)**. Input: `output/cleaned_data/trends_combined_english_features.csv`; requires an Anthropic API
+   key (`anthropic.Anthropic()` picks up `ANTHROPIC_API_KEY` from the environment). Draws a
+   stratified sample (sourdough/banana_bread/dalgona_coffee capped at 3,000 posts each;
+   baked_oats/feta_pasta kept at full size, ~9,423 posts total) and classifies each post via the
+   Claude Message Batches API into 5 non-exclusive content-type labels (recipe/instructional,
+   personal/lifestyle, media repost, meme/joke, spam/low-content). Makes real, paid API calls.
+   Output: overwrites `output/cleaned_data/trends_combined_english_features.csv`, now scoped to
+   the ~9,423-row stratified sample with 5 new `is_*` binary columns.
 
-Then run `01_data_pull.ipynb`, then `02_data_cleaning.ipynb`, then `03_analysis.ipynb`.
+6. **[`02_regression_models.ipynb`](code/regression/02_regression_models.ipynb)**. Input:
+   `output/cleaned_data/trends_combined_english_features.csv` (the stratified sample). Fits one
+   pooled OLS model each for `log_likes` and `log_comments` across all 5 trends together, with
+   trend dummy variables (sourdough as baseline) and a VIF multicollinearity check. Deprioritized
+   in favor of the per-trend models below; kept for reference. Output: notebook console output
+   only (model summaries), no file saved.
 
-**Note:** the intermediate files saved to `cleaned_data/` are large (the combined raw Instagram file is several hundred MB), since they carry all original columns per row. If this project is version-controlled with git, `cleaned_data/` should be added to `.gitignore` rather than committed.
+7. **[`03_per_trend_regressions.ipynb`](code/regression/03_per_trend_regressions.ipynb)**. Input: `output/cleaned_data/trends_combined_english_features.csv` (the stratified sample).
+   **Primary Method #6 analysis.** Fits separate `log_likes`/`log_comments` OLS models per trend
+   (no trend dummies needed, each model restricted to one trend already), compares coefficients
+   across trends via forest plots, and checks R² and VIF per trend. `baked_oats` (n=121) is
+   flagged as below the 10-observations-per-parameter reliability threshold. Output:
+   `output/cleaned_data/per_trend_regression_comparison.csv`,
+   `output/regression/forest_plot_likes.png`, `output/regression/forest_plot_comments.png`.
+
+### `code/lda/` (Method #7: undiscovered trends via topic modeling)
+
+8. **[`00_build_dataset_and_config.ipynb`](code/lda/00_build_dataset_and_config.ipynb)**. Input: the 4 raw Instagram/Facebook CSVs in `data/`. Builds the non-trend corpus: all
+   English-language posts that do NOT match any of the 5 known trend keyword sets, after
+   dropping rows with neither text nor hashtags. Also saves the shared preprocessing config
+   (stopword lists, vectorizer settings, K values to test) used by both LDA notebooks below.
+   Output: `output/cleaned_data/non_trend_english.csv`, `code/lda/lda_config.json`.
+
+9. **[`01a_lda_text.ipynb`](code/lda/01a_lda_text.ipynb)**. Input:
+   `output/cleaned_data/non_trend_english.csv`, `code/lda/lda_config.json`. Fits LDA topic models
+   on post `text` at K=5,10,15,20,25 (lemmatized unigrams), selects K=20 by highest `c_v`
+   coherence score, and saves top-words/topic-prevalence visualizations plus an interactive
+   pyLDAvis panel. Output: `output/lda/lda_coherence_vs_k_text.png`,
+   `output/lda/lda_top_words_text.png`, `output/lda/lda_topic_prevalence_text.png`,
+   `output/lda/lda_visualization_text.html`, plus fitted models/vectorizer/DTM checkpoints under
+   `output/lda/model_checkpoints/`.
+
+10. **[`01b_lda_hashtags.ipynb`](code/lda/01b_lda_hashtags.ipynb)**. Same pipeline as `01a`, run
+    on the `hashtags` field instead of `text`. Selects K=10 by highest `c_v` coherence score
+    (highest-scoring K, not the largest K value tested). Output:
+    `output/lda/lda_coherence_vs_k_hashtags.png`, `output/lda/lda_top_words_hashtags.png`,
+    `output/lda/lda_topic_prevalence_hashtags.png`, `output/lda/lda_visualization_hashtags.html`,
+    plus checkpoints under `output/lda/model_checkpoints/`.
+
+## `output/_unused/`
+
+Holds files produced during earlier analysis iterations (superseded LDA checkpoints/visualizations
+from a prior K-selection pass, debug run logs, an early creator-type breakdown that was dropped
+from the final analysis, notebook auto-save checkpoints) that are not part of the final reported
+results but were kept rather than deleted.
+
+## Out of scope
+
+`Final Project Progress/code/` (the original, non-English-filtered pipeline that builds the 5
+per-trend CSVs from raw data, plus the Google Trends and weekly lockdown overlay notebooks) is a
+separate, earlier pipeline and is not part of this reorganization.
 
 ## Requirements
 
-- pandas
-- numpy
-- matplotlib
+pandas, numpy, scipy, statsmodels, matplotlib, scikit-learn, gensim, nltk, vaderSentiment, emoji,
+networkx, pyLDAvis, anthropic (for `code/regression/01_zero_shot_classification.ipynb` only, plus
+an `ANTHROPIC_API_KEY` environment variable).

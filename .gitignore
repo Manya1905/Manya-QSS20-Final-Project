@@ -1,0 +1,23 @@
+# Raw and intermediate data -- lives in Google Drive, not in this repo
+output/cleaned_data/
+
+# LDA model binaries -- large, regenerable from the notebooks, not a "result" file
+output/lda/model_checkpoints/
+
+# Superseded/debug artifacts from earlier analysis iterations
+output/_unused/
+
+# Superseded design/step-by-step docs, kept locally for reference only
+unused readmes/
+
+# Legacy pre-reorg pipeline and its raw/cleaned data -- superseded by code/ + output/
+Final Project Progress/data/
+Final Project Progress/cleaned_data/
+Final Project Progress/code_english_only/
+Final Project Progress/Regression Visualizations/
+Final Project Progress/code/*.png
+Final Project Progress/code/04_statistical_tests.ipynb
+Final Project Progress/code/05_engagement_analysis.ipynb
+
+# Jupyter checkpoint junk
+**/.ipynb_checkpoints/
