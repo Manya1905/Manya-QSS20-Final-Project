@@ -7,9 +7,6 @@ output/lda/model_checkpoints/
 # Superseded/debug artifacts from earlier analysis iterations
 output/_unused/
 
-# Superseded design/step-by-step docs, kept locally for reference only
-unused readmes/
-
 # Legacy pre-reorg pipeline and its raw/cleaned data -- superseded by code/ + output/
 Final Project Progress/data/
 Final Project Progress/cleaned_data/
