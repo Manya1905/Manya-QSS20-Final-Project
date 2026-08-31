@@ -99,19 +99,6 @@ to `code/` and `output/`) before running any notebook below:
     `output/lda/lda_topic_prevalence_hashtags.png`, `output/lda/lda_visualization_hashtags.html`,
     plus checkpoints under `output/lda/model_checkpoints/`.
 
-## `output/_unused/`
-
-Holds files produced during earlier analysis iterations (superseded LDA checkpoints/visualizations
-from a prior K-selection pass, debug run logs, an early creator-type breakdown that was dropped
-from the final analysis, notebook auto-save checkpoints) that are not part of the final reported
-results but were kept rather than deleted.
-
-## Out of scope
-
-`Final Project Progress/code/` (the original, non-English-filtered pipeline that builds the 5
-per-trend CSVs from raw data, plus the Google Trends and weekly lockdown overlay notebooks) is a
-separate, earlier pipeline and is not part of this reorganization.
-
 ## Requirements
 
 pandas, numpy, scipy, statsmodels, matplotlib, scikit-learn, gensim, nltk, vaderSentiment, emoji,
